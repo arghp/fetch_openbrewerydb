@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>fetch-openbrewerydb</title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src='https://unpkg.com/babel-standalone@6/babel.min.js'></script>
+</head>
+<body>
+    <div id='app'></div>
+
+    <script type='text/babel'>
+        class Waiting extends React.Component {
+
+            constructor(props) {
+                super(props);
+                this.state = {
+                    text: 'Waiting for input'
+                };
+            }
+
+            componentDidMount() {
+                const stopper = this.state.text + '...';
+                    this.interval = window.setInterval(() => {
+                    this.state.text === stopper
+                        ? this.setState(() => ({ text: 'Waiting for input' }))
+                        : this.setState((prevState) => ({ text: prevState.text + '.' }))
+                }, 1000)
+            }
+
+            componentWillUnmount() {
+                window.clearInterval(this.interval);
+            }
+
+            render() {
+                return (
+                    <p>
+                        {this.state.text}
+                    </p>
+                )
+            }
+        }
+
+
+        {/* Search Results Component */}
+
+        function SearchResults (props) {
+            return (
+                <div>
+                    <h2>Results</h2>
+                        <ul>
+                            {props.list.map((brewery) => (
+                                <li key={brewery.id}>
+                                    <span>{brewery.name}</span>
+                                    <button onClick={() => props.onAddFavorite(brewery)}>Favorite</button>
+                                </li>
+                            ))}
+                        </ul>
+                </div>
+            )
+        }
+
+        {/* Favorites Component */}
+
+        function Favorites (props) {
+            return (
+                <div>
+                    <h2>Favorites</h2>
+                        <ul>
+                            {props.list.map((favorite) => (
+                                <li key={favorite.id}>
+                                    <span>{favorite.name}</span>
+                                    <button onClick={() => props.onRemoveFavorite(favorite.id)}>Remove</button>
+                                </li>
+                            ))}
+                        </ul>
+                </div>
+              )
+        }
+
+        {/* Main App Component */}
+
+        class App extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = {
+                    breweries: [],
+                    favorites: [],
+                    input: '',
+                    waiting: true,
+                }
+
+                this.updateInput = this.updateInput.bind(this)
+                this.handleSearch = this.handleSearch.bind(this)
+                this.handleRemoveFavorite = this.handleRemoveFavorite.bind(this)
+                this.handleAddFavorite = this.handleAddFavorite.bind(this)
+            }
+
+            componentDidMount() {
+                // load previously stored favorites
+                if (localStorage.getItem("favorites") != null) {
+                    var storedFaves = JSON.parse(localStorage.getItem("favorites"))
+
+                    this.setState({
+                        favorites: storedFaves,
+                    })
+                }
+            }
+
+            componentDidUpdate(prevProps) {
+
+                localStorage.setItem("favorites", JSON.stringify(this.state.favorites))
+            }
+
+            handleSearch() {
+                // check if valid search
+                if (this.state.input.length) {
+                    fetch('http://localhost:3000/search/' + this.state.input)
+                    .then(response => {
+                        return response.json()
+                    })
+                    .then((data) => {
+                        // console.log(data)
+                        this.setState({
+                            breweries: data,
+                            waiting: false,
+                        })
+                    })
+                }
+            }
+
+            handleRemoveFavorite(id) {
+                this.setState((currentState) => {
+                    return {
+                        favorites: currentState.favorites.filter((favorite) => favorite.id !== id)
+                    }
+                })
+            }
+
+            handleAddFavorite(brewery) {
+                var temp = this.state.favorites.filter((favorite) => favorite.id === brewery.id)
+
+                if (temp.length == 0) {
+                    this.setState((currentState) => {
+                        return {
+                            favorites: currentState.favorites.concat([brewery])
+                        }
+                    })
+                } else {
+                    window.alert("Already favorited!")
+                }
+            }
+      
+            updateInput(e) {
+                const value = e.target.value
+                this.setState({
+                    input: value
+                })
+            }
+
+            render() {
+                const isWaiting = this.state.waiting
+                return (
+                    <div>
+                        <input
+                            type='text'
+                            placeholder='search breweries'
+                            value={this.state.input}
+                            onChange={this.updateInput}
+                        />
+
+                        <button onClick={this.handleSearch}>
+                          Search
+                        </button>
+
+                        <SearchResults
+                            list={this.state.breweries}
+                            onAddFavorite={this.handleAddFavorite}
+                        />
+
+                        {isWaiting? (<Waiting />) : (<span />)}
+
+                        <Favorites
+                            list={this.state.favorites}
+                            onRemoveFavorite={this.handleRemoveFavorite}
+                        />
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('app')
+        )
+    </script>
+</body>
+</html>
