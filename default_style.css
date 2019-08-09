@@ -1,0 +1,28 @@
+body {
+    font-family: courier-std, monospace;
+    font-style: normal;
+    font-size: 10pt;
+}
+
+#container {
+    display:flex;
+    position:absolute; 
+    top:0; 
+    bottom:0;
+    right:0;
+    left:0;
+}
+
+#box {
+    margin:auto;
+}
+
+button.asText {
+    background: transparent;
+    border: 0;
+    cursor:pointer;
+}
+
+button.asText:focus {
+    outline: transparent;
+}

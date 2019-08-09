@@ -5,9 +5,30 @@
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src='https://unpkg.com/babel-standalone@6/babel.min.js'></script>
+    <link rel="stylesheet" href="default_style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Neuton|Open+Sans&display=swap" rel="stylesheet"/>
 </head>
 <body>
-    <div id='app'></div>
+    <div id = 'container'>
+        <div id = 'box'>
+            <pre>
+.   *   ..  . *  *
+*  * @()Ooc()*   o  .
+    (Q@*0CG*O()  ___
+   |\_________/|/ _ \
+   |  |  |  |  | / | |
+   |  |  |  |  | | | |
+   |  |  |  |  | | | |
+   |  |  |  |  | | | |
+   |  |  |  |  | | | |
+   |  |  |  |  | \_| |
+   |  |  |  |  |\___/ 
+   |\_|__|__|_/|
+    \_________/
+            </pre>
+            <div id='app'></div>
+        </div>
+    </div>
 
     <script type='text/babel'>
         class Waiting extends React.Component {
@@ -52,7 +73,7 @@
                             {props.list.map((brewery) => (
                                 <li key={brewery.id}>
                                     <span>{brewery.name}</span>
-                                    <button onClick={() => props.onAddFavorite(brewery)}>Favorite</button>
+                                    <button class="asText" onClick={() => props.onAddFavorite(brewery)}>&#11088;</button>
                                 </li>
                             ))}
                         </ul>
@@ -70,7 +91,7 @@
                             {props.list.map((favorite) => (
                                 <li key={favorite.id}>
                                     <span>{favorite.name}</span>
-                                    <button onClick={() => props.onRemoveFavorite(favorite.id)}>Remove</button>
+                                    <button class="asText" onClick={() => props.onRemoveFavorite(favorite.id)}>&#10060;</button>
                                 </li>
                             ))}
                         </ul>
@@ -170,7 +191,7 @@
                         />
 
                         <button onClick={this.handleSearch}>
-                          Search
+                          &#8594;
                         </button>
 
                         <SearchResults
