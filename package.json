@@ -5,6 +5,6 @@
                 "body-parser": "latest",
                 "cors": "^2.8.5",
                 "express": "latest",
-                "node-fetch": "^2.6.0"
+                "node-fetch": "^2.6.7"
         }
 }
